@@ -75,7 +75,6 @@ void getMinDistanceDirection(vector<vector<Cell>> &map, int &minDistance, char &
 void floodOpenNeighbours(vector<vector<Cell>> &map);
 void moveInDirection(vector<vector<Cell>> &map, char direction);
 void setMazeValue(vector<vector<Cell>> &map);
-void KnownWalls(vector<vector<Cell>> &map);
 
 //---------------------main()--------------
 int main(int argc, char *argv[])
@@ -103,19 +102,7 @@ void setMazeValue(vector<vector<Cell>> &map){
          API::setText(i,j,to_string(map[i][j].getFloodFillCost()));
 }
 
-void KnownWalls(vector<vector<Cell>> &map){
-    for(int i=0; i<mazeSize; i++){
-        for(int j=0; j<mazeSize; j++){
-            if(map[i][j].hasNorthWall()) API::setWall(i,j,'n');
-            if(map[i][j].hasSouthWall()) API::setWall(i,j,'s');
-            if(map[i][j].hasEastWall()) API::setWall(i,j,'e');
-            if(map[i][j].hasWestWall()) API::setWall(i,j,'w');
-        }
-    }
-}
-
-bool isGoal(int x, int y)
-{
+bool isGoal(int x, int y){
     if (searchMode == FIND_CENTRE)
         return ((x == 7 || x == 8) && (y == 7 || y == 8));
     else
@@ -126,8 +113,7 @@ void log(const std::string &text) { cerr << text << std::endl; }
 
 // updates the orientation and current, x, y coordinates based on what move was made
 // must be called after each move
-void updateposition(char currentMove)
-{
+void updateposition(char currentMove){
     // update the orientation and coordinates
     switch (orientation)
     {
@@ -169,8 +155,7 @@ void updateposition(char currentMove)
     }
 }
 
-void exploreCell(vector<vector<Cell>> &map, int x, int y)
-{
+void exploreCell(vector<vector<Cell>> &map, int x, int y){
     // map[x][y].setVisited(); // first visit is straight, then right, then left, then back
     if (map[x][y].getHasBeenExplored())
     {
@@ -205,31 +190,31 @@ void exploreCell(vector<vector<Cell>> &map, int x, int y)
         map[x][y].setSouthWall(API::wallRight());
         break;
     }
+    //Specifying that if current cell has a wall ahead then the ahead cell has a wall behind
     if(isSafe(x,y+1) && map[x][y].hasNorthWall()) map[x][y+1].setSouthWall(true);
     if(isSafe(x,y-1) && map[x][y].hasSouthWall()) map[x][y-1].setNorthWall(true);
     if(isSafe(x+1,y) && map[x][y].hasEastWall()) map[x+1][y].setWestWall(true);
     if(isSafe(x-1,y) && map[x][y].hasWestWall()) map[x-1][y].setEastWall(true);
+
+    //Setting the wall as visited on the Maze
+    if(map[x][y].hasNorthWall()) API::setWall(x,y,'n');
+    if(map[x][y].hasSouthWall()) API::setWall(x,y,'s');
+    if(map[x][y].hasEastWall()) API::setWall(x,y,'e');
+    if(map[x][y].hasWestWall()) API::setWall(x,y,'w');
 }
 
-void initializeMaze(vector<vector<Cell>> &map)
-{
-    for (int i = 0; i < mazeSize; i++)
-    {
-        map[i].reserve(mazeSize);
-    }
-    for (int i = 0; i < mazeSize; i++)
-    {
-        for (int j = 0; j < mazeSize; j++)
-        {
+void initializeMaze(vector<vector<Cell>> &map){
+    for (int i = 0; i < mazeSize; i++){
+        for (int j = 0; j < mazeSize; j++){
             map[i][j].setFloodFillCost(-1);
         }
     }
-
     map[0][0].setSouthWall(true); // leads to errors
+    API::setWall(0,0,'s');
 }
 
-void findGoal(vector<vector<Cell>> &map) // takes coordinates of current cell
-{
+// takes coordinates of current cell
+void findGoal(vector<vector<Cell>> &map){
     bool destinationFound = false;
     int minDistance;
     char minDirection;
@@ -237,7 +222,6 @@ void findGoal(vector<vector<Cell>> &map) // takes coordinates of current cell
     while (!destinationFound)
     {
         exploreCell(map, x, y); // explore current cell
-        KnownWalls(map);
         minDistance = mazeSize * mazeSize* 2;
         // if goal fount-> exit while loop
         if (isGoal(x, y)){
