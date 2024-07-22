@@ -258,7 +258,7 @@ string find_safeRoute(vector<vector<Cell>> &safeMap){
     char virtualOrientation = 'N';
 
     while(!isGoal(virtualX,virtualY)){
-        int minDistance=1e5;
+        int minDistance=MAX;
         char minDirection;
         getMinDistanceDirection(safeMap,minDistance,minDirection,virtualX,virtualY,virtualOrientation);
         if(minDirection=='r'){
