@@ -28,7 +28,7 @@ mode searchMode = FIND_CENTRE;
 int MAX = 1e9;
 int Exploration_Rounds = 2;
 int forwardCost = 10;
-int turnCost = 200;
+int turnCost = 10;
 int groupingCost = 5;
 int discountAfter = 2;
 
@@ -118,27 +118,27 @@ void fastRun(vector<vector<Cell>> &safeMap,vector<vector<Cell>> &map){
     string moves = find_safeRoute(safeMap); 
     int N_moves = moves.size();
     log(moves);
-    for(int i=0; i<N_moves; i++){
-        if(moves[i]=='F') API::moveForward();
-        if(moves[i]=='R') API::turnRight();
-        if(moves[i]=='L') API::turnLeft();
-    }
-    // int pos=0,consecutiveForwards=0;
-    // while(pos < N_moves){
-    //     if(moves[pos]=='R'){
-    //         if(consecutiveForwards!=0) API::moveForward(consecutiveForwards);
-    //         consecutiveForwards=0;
-    //         API::turnRight();
-    //     }
-    //     if(moves[pos]=='L'){
-    //         if(consecutiveForwards!=0) API::moveForward(consecutiveForwards);
-    //         consecutiveForwards=0;
-    //         API::turnLeft();
-    //     }
-    //     if(moves[pos]=='F') consecutiveForwards++;
-    //     pos++;
+    // for(int i=0; i<N_moves; i++){
+    //     if(moves[i]=='F') API::moveForward();
+    //     if(moves[i]=='R') API::turnRight();
+    //     if(moves[i]=='L') API::turnLeft();
     // }
-    // if(consecutiveForwards!=0) if(consecutiveForwards!=0) API::moveForward(consecutiveForwards);
+    int pos=0,consecutiveForwards=0;
+    while(pos < N_moves){
+        if(moves[pos]=='R'){
+            if(consecutiveForwards!=0) API::moveForward(consecutiveForwards);
+            consecutiveForwards=0;
+            API::turnRight();
+        }
+        if(moves[pos]=='L'){
+            if(consecutiveForwards!=0) API::moveForward(consecutiveForwards);
+            consecutiveForwards=0;
+            API::turnLeft();
+        }
+        if(moves[pos]=='F') consecutiveForwards++;
+        pos++;
+    }
+    if(consecutiveForwards!=0) if(consecutiveForwards!=0) API::moveForward(consecutiveForwards);
 
 }
 
